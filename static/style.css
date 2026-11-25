@@ -38,3 +38,16 @@ tr.atrasado strong { color: #b00; }
 button.perigo { background: #b03a3a; }
 button.perigo:hover { background: #8a2b2b; }
 tr.inativo td { color: #999; }
+.campo-busca { display: flex; align-items: center; gap: .8rem; width: 100%; }
+.auto { position: relative; flex: 1; max-width: 560px; }
+.auto input[type=text] { width: 100%; }
+.auto input:disabled { background: #eee; }
+.sugestoes { position: absolute; z-index: 10; left: 0; right: 0; top: 100%; margin: 2px 0 0; padding: 0; list-style: none;
+  background: #fff; border: 1px solid #bbb; border-radius: 5px; max-height: 260px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,.12); }
+.sugestoes li { padding: .45rem .6rem; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; }
+.sugestoes li small { color: #777; white-space: nowrap; }
+.sugestoes li.ativo, .sugestoes li:hover { background: #e3ecfa; }
+.sugestoes li.indisponivel { color: #aaa; cursor: not-allowed; background: none; }
+.sugestoes li.nada { color: #777; cursor: default; background: none; }
+.link-cadastrar { white-space: nowrap; color: #2b5797; font-weight: 600; text-decoration: none; }
+.link-cadastrar:hover { text-decoration: underline; }

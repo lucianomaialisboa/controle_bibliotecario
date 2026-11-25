@@ -292,8 +292,29 @@ def index():
         EMPRESTIMOS_SQL + " WHERE e.data_devolucao IS NULL ORDER BY e.data_prevista"
     ).fetchall()
     prevista = (date.today() + timedelta(days=PRAZO_PADRAO_DIAS)).isoformat()
+    alunos_json = [
+        {
+            "id": a["id"],
+            "texto": a["nome"] + (f" ({a['turma']})" if a["turma"] else ""),
+            "extra": f"matrícula {a['matricula']}" if a["matricula"] else "",
+            "busca": " ".join(filter(None, [a["nome"], a["turma"], a["matricula"]])),
+        }
+        for a in alunos
+    ]
+    livros_json = [
+        {
+            "id": l["id"],
+            "texto": l["titulo"] + (f" – {l['autor']}" if l["autor"] else ""),
+            "extra": (f"[{l['codigo']}] " if l["codigo"] else "")
+                     + (f"{l['disponiveis']} de {l['exemplares']} disponíveis" if l["disponiveis"] > 0
+                        else "nenhum exemplar disponível"),
+            "indisponivel": l["disponiveis"] <= 0,
+            "busca": " ".join(filter(None, [l["titulo"], l["autor"], l["codigo"]])),
+        }
+        for l in livros
+    ]
     return render_template(
-        "index.html", alunos=alunos, livros=livros, abertos=abertos,
+        "index.html", alunos_json=alunos_json, livros_json=livros_json, abertos=abertos,
         prevista=prevista, hoje=hoje(),
     )
 

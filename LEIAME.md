@@ -7,7 +7,7 @@ Aplicação web simples para registrar empréstimos de livros da biblioteca esco
 
 - **Login de usuários** (bibliotecários, professores, etc.). No primeiro acesso o sistema pede para criar o **administrador**.
 - **Usuários** (só para administradores): criar usuários, redefinir senha e desativar/reativar. Cada usuário pode trocar a própria senha.
-- **Empréstimos** (tela inicial): escolha o aluno e o livro, ou use **"＋ Cadastrar novo aluno"** / **"＋ Cadastrar novo livro"** para cadastrar na hora. O prazo padrão é de 7 dias.
+- **Empréstimos** (tela inicial): digite parte do nome do aluno ou do livro e escolha na lista que aparece (a busca ignora acentos e também procura por turma, matrícula, autor e código). Se não estiver cadastrado, use o link **"＋ cadastrar"** ao lado do campo para cadastrar na hora. O prazo padrão é de 7 dias.
 - Lista dos empréstimos em aberto, com os **atrasados em vermelho** e o botão **Devolver**.
 - **Quem fez o quê**: o sistema grava qual usuário cadastrou cada aluno e cada livro, qual usuário fez cada empréstimo e qual recebeu cada devolução (com data e hora).
 - **Histórico** com busca por aluno, turma, livro ou usuário.
@@ -63,12 +63,15 @@ Abra o endereço no navegador. Na primeira vez aparece a tela **Primeiro acesso*
 (seu nome, login e senha). Depois vá em **Usuários** para criar os logins das outras pessoas.
 Marque "administrador" só para quem também puder gerenciar usuários.
 
+**Fuso horário**: o container Debian costuma vir em UTC, o que deixa a hora dos empréstimos 3 horas adiantada.
+Acerte com `timedatectl set-timezone America/Sao_Paulo` e depois `systemctl restart biblioteca`.
+
 ## Uso diário
 
 | Ação | Como fazer |
 |---|---|
-| Emprestar | Tela **Empréstimos** › escolha aluno e livro › **Registrar empréstimo** |
-| Aluno ou livro novo | No próprio campo, escolha **＋ Cadastrar novo…** e preencha |
+| Emprestar | Tela **Empréstimos** › digite parte do nome do aluno e do livro, escolha na lista › **Registrar empréstimo** |
+| Aluno ou livro novo | Clique no link **＋ cadastrar aluno** / **＋ cadastrar livro** ao lado do campo e preencha |
 | Devolver | Botão **Devolver** na lista de empréstimos em aberto |
 | Ver quem emprestou | Colunas **Por** / **Emprestado por** e **Recebido por** no Histórico |
 | Corrigir um cadastro | Menus **Alunos** ou **Livros** › **editar** |
