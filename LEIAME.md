@@ -66,6 +66,19 @@ Marque "administrador" só para quem também puder gerenciar usuários.
 **Fuso horário**: o container Debian costuma vir em UTC, o que deixa a hora dos empréstimos 3 horas adiantada.
 Acerte com `timedatectl set-timezone America/Sao_Paulo` e depois `systemctl restart biblioteca`.
 
+## Abrir como aplicativo (atalho na Área de Trabalho)
+
+Em cada computador da biblioteca, entre no sistema e clique em **instalar app** (canto superior direito).
+
+- **Windows**: baixe e abra o `instalar-atalho-biblioteca.bat`. Ele cria o atalho **Biblioteca** na Área de Trabalho
+  e no menu Iniciar, usando o Edge (que já vem no Windows) ou o Chrome em modo aplicativo: janela própria, sem barra
+  de endereço nem abas. Não precisa ser administrador. Se aparecer "O Windows protegeu o computador", clique em
+  *Mais informações › Executar assim mesmo*.
+- **Linux**: baixe o `instalar-atalho-biblioteca.sh` e rode `sh ~/Downloads/instalar-atalho-biblioteca.sh`.
+
+O atalho usa o endereço pelo qual você abriu o sistema ao baixar o instalador. Se o IP ou a porta do servidor
+mudar, baixe e rode o instalador de novo.
+
 ## Uso diário
 
 | Ação | Como fazer |

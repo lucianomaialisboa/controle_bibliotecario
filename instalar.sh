@@ -12,8 +12,11 @@ mkdir -p "$DESTINO"
 if [ "$ORIGEM" != "$DESTINO" ]; then
   cp -r "$ORIGEM"/app.py "$ORIGEM"/templates "$ORIGEM"/static "$DESTINO"/
 fi
-if [ ! -f "$DESTINO/.env" ]; then
-  echo "BIBLIOTECA_SECRET=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')" > "$DESTINO/.env"
+touch "$DESTINO/.env"
+# garante quebra de linha no fim do .env antes de acrescentar
+[ -s "$DESTINO/.env" ] && [ -n "$(tail -c1 "$DESTINO/.env")" ] && echo >> "$DESTINO/.env"
+if ! grep -q '^BIBLIOTECA_SECRET=' "$DESTINO/.env"; then
+  echo "BIBLIOTECA_SECRET=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')" >> "$DESTINO/.env"
 fi
 chown -R biblioteca:biblioteca "$DESTINO"
 chmod 600 "$DESTINO/.env"
@@ -24,5 +27,7 @@ systemctl enable --now biblioteca
 systemctl restart biblioteca
 
 IP=$(hostname -I | awk '{print $1}')
+PORTA=$(grep '^BIBLIOTECA_PORT=' "$DESTINO/.env" | cut -d= -f2)
+PORTA=${PORTA:-8080}
 echo ""
-echo "Pronto! Acesse: http://$IP:8080"
+if [ "$PORTA" = "80" ]; then echo "Pronto! Acesse: http://$IP"; else echo "Pronto! Acesse: http://$IP:$PORTA"; fi

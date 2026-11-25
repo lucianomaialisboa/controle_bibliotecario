@@ -2,12 +2,14 @@
 
 Aplicação mínima: Flask + SQLite, um único arquivo de banco (biblioteca.db).
 """
+import base64
 import os
 import sqlite3
 from datetime import date, datetime, timedelta
 from functools import wraps
 
-from flask import Flask, abort, flash, g, redirect, render_template, request, session, url_for
+from flask import (Flask, Response, abort, flash, g, jsonify, redirect, render_template, request,
+                   session, url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -121,7 +123,7 @@ def carregar_usuario():
         ).fetchone()
         if g.user is None:
             session.clear()
-    if request.endpoint in ("login", "primeiro_acesso", "static"):
+    if request.endpoint in ("login", "primeiro_acesso", "static", "manifesto"):
         return None
     if g.user is None:
         tem_usuario = get_db().execute("SELECT 1 FROM usuarios LIMIT 1").fetchone()
@@ -488,6 +490,134 @@ def editar_livro(livro_id):
     if livro is None:
         return redirect(url_for("livros"))
     return render_template("editar_livro.html", livro=livro)
+
+
+# ---------------------------------------------------------------- instalar como app
+@app.route("/manifest.webmanifest")
+def manifesto():
+    dados = {
+        "name": "Biblioteca - controle de empréstimos",
+        "short_name": "Biblioteca",
+        "start_url": "/",
+        "scope": "/",
+        "display": "standalone",
+        "background_color": "#f4f5f7",
+        "theme_color": "#2b5797",
+        "icons": [
+            {"src": url_for("static", filename="icones/icone-192.png"), "sizes": "192x192", "type": "image/png"},
+            {"src": url_for("static", filename="icones/icone-512.png"), "sizes": "512x512", "type": "image/png"},
+        ],
+    }
+    resp = jsonify(dados)
+    resp.mimetype = "application/manifest+json"
+    return resp
+
+
+def endereco_do_sistema():
+    return request.host_url  # ex.: http://192.168.3.4/
+
+
+ATALHO_WINDOWS_PS = r"""
+$url = '__URL__'
+$dir = Join-Path $env:LOCALAPPDATA 'Biblioteca'
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+$ico = Join-Path $dir 'biblioteca.ico'
+try { Invoke-WebRequest -UseBasicParsing -Uri ($url + 'static/icones/icone.ico') -OutFile $ico } catch { }
+$candidatos = @(
+  "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
+  "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
+  "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
+  "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
+  "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
+)
+$nav = $candidatos | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $nav) {
+  Write-Host 'Nao encontrei o Microsoft Edge nem o Google Chrome neste computador.'
+  exit 1
+}
+$argumentos = "--app=$url --window-size=1200,850"
+$ws = New-Object -ComObject WScript.Shell
+$pastas = @([Environment]::GetFolderPath('Desktop'), [Environment]::GetFolderPath('Programs'))
+foreach ($pasta in $pastas) {
+  $lnk = $ws.CreateShortcut((Join-Path $pasta 'Biblioteca.lnk'))
+  $lnk.TargetPath = $nav
+  $lnk.Arguments = $argumentos
+  $lnk.WorkingDirectory = Split-Path $nav
+  $lnk.Description = 'Biblioteca - controle de emprestimos'
+  if (Test-Path $ico) { $lnk.IconLocation = "$ico,0" }
+  $lnk.Save()
+}
+Write-Host ''
+Write-Host 'Pronto! O atalho "Biblioteca" foi criado na Area de Trabalho e no menu Iniciar.'
+Start-Process -FilePath $nav -ArgumentList $argumentos
+"""
+
+ATALHO_LINUX_SH = r"""#!/bin/sh
+# Cria o atalho "Biblioteca" no menu e na area de trabalho (Linux).
+URL='__URL__'
+DIR="$HOME/.local/share/biblioteca"
+mkdir -p "$DIR" "$HOME/.local/share/applications"
+ICONE="$DIR/icone.png"
+if command -v curl >/dev/null 2>&1; then curl -fsSL "${URL}static/icones/icone-512.png" -o "$ICONE" || true
+elif command -v wget >/dev/null 2>&1; then wget -qO "$ICONE" "${URL}static/icones/icone-512.png" || true; fi
+NAV=""
+for n in google-chrome google-chrome-stable chromium chromium-browser microsoft-edge microsoft-edge-stable brave-browser; do
+  if command -v "$n" >/dev/null 2>&1; then NAV="$n"; break; fi
+done
+if [ -z "$NAV" ]; then
+  echo "Nao encontrei Chrome, Chromium ou Edge. Instale um deles e rode de novo."
+  exit 1
+fi
+ARQ="$HOME/.local/share/applications/biblioteca.desktop"
+cat > "$ARQ" <<FIM
+[Desktop Entry]
+Type=Application
+Name=Biblioteca
+Comment=Controle de emprestimos da biblioteca
+Exec=$NAV --app=$URL --window-size=1200,850
+Icon=$ICONE
+Terminal=false
+Categories=Office;Education;
+FIM
+chmod +x "$ARQ"
+DESK=$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")
+if [ -d "$DESK" ]; then
+  cp "$ARQ" "$DESK/biblioteca.desktop"
+  chmod +x "$DESK/biblioteca.desktop"
+  command -v gio >/dev/null 2>&1 && gio set "$DESK/biblioteca.desktop" metadata::trusted true 2>/dev/null || true
+fi
+echo "Pronto! O atalho Biblioteca foi criado no menu de aplicativos e na area de trabalho."
+"$NAV" --app="$URL" --window-size=1200,850 >/dev/null 2>&1 &
+"""
+
+
+@app.route("/instalar-app")
+def instalar_app():
+    return render_template("instalar_app.html", endereco=endereco_do_sistema())
+
+
+@app.route("/instalar-app/windows")
+def atalho_windows():
+    script = ATALHO_WINDOWS_PS.replace("__URL__", endereco_do_sistema().replace("'", "''"))
+    codificado = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    bat = "\r\n".join([
+        "@echo off",
+        "title Instalar atalho da Biblioteca",
+        "echo Criando o atalho da Biblioteca...",
+        f"powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand {codificado}",
+        "echo.",
+        "pause",
+        "",
+    ])
+    return Response(bat, mimetype="application/octet-stream",
+                    headers={"Content-Disposition": "attachment; filename=instalar-atalho-biblioteca.bat"})
+
+
+@app.route("/instalar-app/linux")
+def atalho_linux():
+    script = ATALHO_LINUX_SH.replace("__URL__", endereco_do_sistema().replace("'", ""))
+    return Response(script, mimetype="application/x-sh",
+                    headers={"Content-Disposition": "attachment; filename=instalar-atalho-biblioteca.sh"})
 
 
 init_db()

@@ -52,3 +52,9 @@ tr.inativo td { color: #999; }
 .link-cadastrar { white-space: nowrap; color: #2b5797; font-weight: 600; text-decoration: none; }
 .link-cadastrar:hover { text-decoration: underline; }
 .contador { color: #777; font-size: .9rem; margin: .6rem 0 0; }
+h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+ol li { margin-bottom: .4rem; }
+a.botao { display: inline-block; background: #2b5797; color: #fff; padding: .35rem .8rem; border-radius: 5px; text-decoration: none; }
+a.botao:hover { background: #1e3f6e; }
+.dica { color: #666; font-size: .9rem; }
+code { background: #f0f0f0; padding: .1rem .3rem; border-radius: 3px; }

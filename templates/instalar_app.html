@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Instalar a Biblioteca como aplicativo</h2>
+  <p>O instalador cria um atalho <strong>Biblioteca</strong> na Área de Trabalho e no menu Iniciar.
+     Ele abre o sistema numa janela própria, sem barra de endereço nem abas, como um programa.
+     Faça isso uma vez em cada computador.</p>
+
+  <h3>Windows</h3>
+  <ol>
+    <li>Clique em <a class="botao" href="{{ url_for('atalho_windows') }}">Baixar instalador para Windows</a></li>
+    <li>Abra o arquivo baixado (<code>instalar-atalho-biblioteca.bat</code>).
+        Se o Windows mostrar "O Windows protegeu o computador", clique em <em>Mais informações</em> › <em>Executar assim mesmo</em>.</li>
+    <li>Pronto: o atalho aparece na Área de Trabalho e o sistema já abre como aplicativo.
+        Se quiser, clique com o botão direito no ícone da barra de tarefas › <em>Fixar na barra de tarefas</em>.</li>
+  </ol>
+  <p class="dica">Usa o Microsoft Edge (que já vem no Windows) ou o Google Chrome. Não precisa ser administrador.</p>
+
+  <h3>Linux</h3>
+  <ol>
+    <li>Clique em <a class="botao" href="{{ url_for('atalho_linux') }}">Baixar instalador para Linux</a></li>
+    <li>No terminal, rode: <code>sh ~/Downloads/instalar-atalho-biblioteca.sh</code></li>
+  </ol>
+  <p class="dica">Precisa do Chrome, Chromium ou Edge instalado.</p>
+
+  <h3>Outra forma (sem baixar nada)</h3>
+  <p>No Chrome ou no Edge: menu <strong>⋮</strong> › <em>Transmitir, salvar e compartilhar</em> › <em>Criar atalho…</em>
+     (no Edge: <em>Aplicativos › Instalar este site como um aplicativo</em>) e marque <em>Abrir como janela</em>.</p>
+
+  <p class="dica">Endereço usado pelo atalho: <code>{{ endereco }}</code></p>
+</section>
+{% endblock %}
