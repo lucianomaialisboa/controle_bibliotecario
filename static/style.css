@@ -51,3 +51,4 @@ tr.inativo td { color: #999; }
 .sugestoes li.nada { color: #777; cursor: default; background: none; }
 .link-cadastrar { white-space: nowrap; color: #2b5797; font-weight: 600; text-decoration: none; }
 .link-cadastrar:hover { text-decoration: underline; }
+.contador { color: #777; font-size: .9rem; margin: .6rem 0 0; }

@@ -386,7 +386,10 @@ def devolver(emp_id):
     )
     db.commit()
     flash("Devolução registrada.", "ok")
-    return redirect(request.referrer or url_for("index"))
+    destino = request.referrer or url_for("index")
+    if "/historico" not in destino:
+        destino = destino.split("#")[0] + "#devolucao"
+    return redirect(destino)
 
 
 # ---------------------------------------------------------------- histórico

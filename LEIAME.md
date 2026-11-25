@@ -8,7 +8,7 @@ Aplicação web simples para registrar empréstimos de livros da biblioteca esco
 - **Login de usuários** (bibliotecários, professores, etc.). No primeiro acesso o sistema pede para criar o **administrador**.
 - **Usuários** (só para administradores): criar usuários, redefinir senha e desativar/reativar. Cada usuário pode trocar a própria senha.
 - **Empréstimos** (tela inicial): digite parte do nome do aluno ou do livro e escolha na lista que aparece (a busca ignora acentos e também procura por turma, matrícula, autor e código). Se não estiver cadastrado, use o link **"＋ cadastrar"** ao lado do campo para cadastrar na hora. O prazo padrão é de 7 dias.
-- Lista dos empréstimos em aberto, com os **atrasados em vermelho** e o botão **Devolver**.
+- **Devolução** (na mesma tela): pesquise pelo nome do aluno ou do livro; a lista de empréstimos em aberto é filtrada na hora, com os **atrasados em vermelho** e o botão **Devolver**.
 - **Quem fez o quê**: o sistema grava qual usuário cadastrou cada aluno e cada livro, qual usuário fez cada empréstimo e qual recebeu cada devolução (com data e hora).
 - **Histórico** com busca por aluno, turma, livro ou usuário.
 - **Alunos** e **Livros**: cadastro e edição. Livros têm quantidade de exemplares, e o sistema não deixa emprestar quando não há exemplar disponível.
@@ -72,7 +72,7 @@ Acerte com `timedatectl set-timezone America/Sao_Paulo` e depois `systemctl rest
 |---|---|
 | Emprestar | Tela **Empréstimos** › digite parte do nome do aluno e do livro, escolha na lista › **Registrar empréstimo** |
 | Aluno ou livro novo | Clique no link **＋ cadastrar aluno** / **＋ cadastrar livro** ao lado do campo e preencha |
-| Devolver | Botão **Devolver** na lista de empréstimos em aberto |
+| Devolver | Seção **Devolução** (abaixo do empréstimo) › pesquise pelo nome do aluno ou do livro › **Devolver** |
 | Ver quem emprestou | Colunas **Por** / **Emprestado por** e **Recebido por** no Histórico |
 | Corrigir um cadastro | Menus **Alunos** ou **Livros** › **editar** |
 | Esqueceu a senha | Um administrador redefine em **Usuários** |

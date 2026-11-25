@@ -50,14 +50,19 @@
   </form>
 </section>
 
-<section class="card">
-  <h2>Empréstimos em aberto ({{ abertos|length }})</h2>
+<section class="card" id="devolucao">
+  <h2>Devolução</h2>
+  <div class="busca">
+    <input type="search" id="dev_busca" placeholder="Pesquisar pelo nome do aluno ou do livro"
+           value="{{ request.args.get('dev', '') }}" autocomplete="off">
+  </div>
   {% if abertos %}
-  <table>
+  <table id="dev_tabela">
     <thead><tr><th>Aluno</th><th>Turma</th><th>Livro</th><th>Emprestado</th><th>Por</th><th>Devolver até</th><th></th></tr></thead>
     <tbody>
     {% for e in abertos %}
-      <tr class="{{ 'atrasado' if e.data_prevista < hoje }}">
+      <tr class="{{ 'atrasado' if e.data_prevista < hoje }}"
+          data-busca="{{ e.aluno_nome }} {{ e.aluno_turma or '' }} {{ e.livro_titulo }} {{ e.livro_codigo or '' }}">
         <td>{{ e.aluno_nome }}</td>
         <td>{{ e.aluno_turma or '' }}</td>
         <td>{{ e.livro_titulo }}{% if e.livro_codigo %} <small>[{{ e.livro_codigo }}]</small>{% endif %}</td>
@@ -74,6 +79,8 @@
     {% endfor %}
     </tbody>
   </table>
+  <p class="vazio" id="dev_nada" hidden>Nenhum empréstimo em aberto encontrado para essa pesquisa.</p>
+  <p class="contador" id="dev_contador"></p>
   {% else %}
     <p class="vazio">Nenhum livro emprestado no momento.</p>
   {% endif %}
@@ -163,6 +170,34 @@
     });
     validar();
   });
+
+  // Devolução: filtra a lista de empréstimos em aberto enquanto digita.
+  (() => {
+    const busca = document.getElementById('dev_busca');
+    const tabela = document.getElementById('dev_tabela');
+    if (!busca || !tabela) return;
+    const linhas = [...tabela.tBodies[0].rows].map(tr => ({ tr, chave: normalizar(tr.dataset.busca) }));
+    const nada = document.getElementById('dev_nada');
+    const contador = document.getElementById('dev_contador');
+    function filtrar() {
+      const termos = normalizar(busca.value).split(/\s+/).filter(Boolean);
+      let n = 0;
+      linhas.forEach(l => {
+        const ok = termos.every(t => l.chave.includes(t));
+        l.tr.hidden = !ok;
+        if (ok) n++;
+      });
+      tabela.hidden = n === 0;
+      nada.hidden = n !== 0;
+      contador.textContent = termos.length ? `${n} de ${linhas.length} empréstimos em aberto` : `${linhas.length} empréstimos em aberto`;
+      // Guarda a pesquisa no endereço, para ela continuar depois de clicar em Devolver.
+      const url = new URL(location);
+      if (busca.value) url.searchParams.set('dev', busca.value); else url.searchParams.delete('dev');
+      history.replaceState(null, '', url);
+    }
+    busca.addEventListener('input', filtrar);
+    filtrar();
+  })();
 
   // Link "cadastrar" ao lado do campo: mostra os campos de cadastro rápido.
   document.querySelectorAll('.link-cadastrar').forEach(link => {
