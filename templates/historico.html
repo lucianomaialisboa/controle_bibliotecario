@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Histórico de empréstimos</h2>
+  <form method="get" class="busca">
+    <input name="q" value="{{ busca }}" placeholder="Buscar por aluno, turma, livro ou usuário">
+    <button>Buscar</button>
+  </form>
+  <table>
+    <thead><tr><th>Aluno</th><th>Turma</th><th>Livro</th><th>Emprestado</th><th>Emprestado por</th><th>Previsto</th><th>Devolvido</th><th>Recebido por</th><th></th></tr></thead>
+    <tbody>
+    {% for e in emprestimos %}
+      <tr class="{{ 'atrasado' if not e.data_devolucao and e.data_prevista < hoje }}">
+        <td>{{ e.aluno_nome }}</td>
+        <td>{{ e.aluno_turma or '' }}</td>
+        <td>{{ e.livro_titulo }}</td>
+        <td>{{ e.data_emprestimo|br }}</td>
+        <td>{{ e.emprestado_por or '' }}</td>
+        <td>{{ e.data_prevista|br }}</td>
+        <td>{{ e.data_devolucao|br if e.data_devolucao else 'em aberto' }}</td>
+        <td>{{ e.recebido_por or '' }}</td>
+        <td>
+          {% if not e.data_devolucao %}
+          <form method="post" action="{{ url_for('devolver', emp_id=e.id) }}"><button class="pequeno">Devolver</button></form>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9" class="vazio">Nada encontrado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card estreito">
+  <h2>Entrar</h2>
+  <form method="post" class="coluna">
+    <input name="login" placeholder="Usuário" required autofocus>
+    <input name="senha" type="password" placeholder="Senha" required>
+    <button>Entrar</button>
+  </form>
+</section>
+{% endblock %}

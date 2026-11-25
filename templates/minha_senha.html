@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card estreito">
+  <h2>Alterar minha senha</h2>
+  <form method="post" class="coluna">
+    <input name="atual" type="password" placeholder="Senha atual" required>
+    <input name="nova" type="password" placeholder="Nova senha (mín. 4 caracteres)" required minlength="4">
+    <button>Salvar</button>
+  </form>
+</section>
+{% endblock %}

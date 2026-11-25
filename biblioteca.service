@@ -1,0 +1,15 @@
+[Unit]
+Description=Biblioteca - controle de emprestimos
+After=network.target
+
+[Service]
+User=biblioteca
+WorkingDirectory=/opt/biblioteca
+Environment=BIBLIOTECA_PORT=8080
+Environment=BIBLIOTECA_PRAZO_DIAS=7
+EnvironmentFile=-/opt/biblioteca/.env
+ExecStart=/usr/bin/python3 /opt/biblioteca/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

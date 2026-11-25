@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Editar livro</h2>
+  <form method="post" class="linha">
+    <input name="titulo" value="{{ livro.titulo }}" placeholder="Título *" required>
+    <input name="autor" value="{{ livro.autor or '' }}" placeholder="Autor">
+    <input name="codigo" value="{{ livro.codigo or '' }}" placeholder="Código / tombo">
+    <label class="inline">Exemplares <input name="exemplares" type="number" min="1" value="{{ livro.exemplares }}"></label>
+    <button>Salvar</button>
+    <a href="{{ url_for('livros') }}">cancelar</a>
+  </form>
+</section>
+{% endblock %}

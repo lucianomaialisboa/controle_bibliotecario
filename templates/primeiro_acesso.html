@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card estreito">
+  <h2>Primeiro acesso</h2>
+  <p>Crie o usuário administrador. Ele poderá cadastrar os demais usuários.</p>
+  <form method="post" class="coluna">
+    <input name="nome" placeholder="Seu nome *" required autofocus>
+    <input name="login" placeholder="Usuário (login) *" required>
+    <input name="senha" type="password" placeholder="Senha (mín. 4 caracteres) *" required minlength="4">
+    <button>Criar administrador</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Cadastrar livro</h2>
+  <form method="post" class="linha">
+    <input name="titulo" placeholder="Título *" required>
+    <input name="autor" placeholder="Autor">
+    <input name="codigo" placeholder="Código / tombo">
+    <label class="inline">Exemplares <input name="exemplares" type="number" min="1" value="1"></label>
+    <button>Salvar</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Livros ({{ livros|length }})</h2>
+  <table>
+    <thead><tr><th>Título</th><th>Autor</th><th>Código</th><th>Exemplares</th><th>Disponíveis</th><th>Cadastrado por</th><th></th></tr></thead>
+    <tbody>
+    {% for l in livros %}
+      <tr>
+        <td>{{ l.titulo }}</td><td>{{ l.autor or '' }}</td><td>{{ l.codigo or '' }}</td>
+        <td>{{ l.exemplares }}</td><td>{{ l.disponiveis }}</td><td>{{ l.cadastrado_por or '' }} <small>{{ l.criado_em|br }}</small></td>
+        <td><a href="{{ url_for('editar_livro', livro_id=l.id) }}">editar</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="vazio">Nenhum livro cadastrado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

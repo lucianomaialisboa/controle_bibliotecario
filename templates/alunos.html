@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Cadastrar aluno</h2>
+  <form method="post" class="linha">
+    <input name="nome" placeholder="Nome *" required>
+    <input name="turma" placeholder="Turma">
+    <input name="matricula" placeholder="Matrícula">
+    <input name="telefone" placeholder="Telefone do responsável">
+    <button>Salvar</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Alunos ({{ alunos|length }})</h2>
+  <table>
+    <thead><tr><th>Nome</th><th>Turma</th><th>Matrícula</th><th>Telefone</th><th>Livros com ele</th><th>Cadastrado por</th><th></th></tr></thead>
+    <tbody>
+    {% for a in alunos %}
+      <tr>
+        <td>{{ a.nome }}</td><td>{{ a.turma or '' }}</td><td>{{ a.matricula or '' }}</td>
+        <td>{{ a.telefone or '' }}</td><td>{{ a.em_aberto }}</td><td>{{ a.cadastrado_por or '' }} <small>{{ a.criado_em|br }}</small></td>
+        <td><a href="{{ url_for('editar_aluno', aluno_id=a.id) }}">editar</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="vazio">Nenhum aluno cadastrado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

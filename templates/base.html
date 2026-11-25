@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca da Escola</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>📚 Biblioteca</h1>
+    {% if g.user %}
+    <nav>
+      <a href="{{ url_for('index') }}" class="{{ 'ativo' if request.endpoint == 'index' }}">Empréstimos</a>
+      <a href="{{ url_for('historico') }}" class="{{ 'ativo' if request.endpoint == 'historico' }}">Histórico</a>
+      <a href="{{ url_for('alunos') }}" class="{{ 'ativo' if request.endpoint in ('alunos','editar_aluno') }}">Alunos</a>
+      <a href="{{ url_for('livros') }}" class="{{ 'ativo' if request.endpoint in ('livros','editar_livro') }}">Livros</a>
+      {% if g.user.admin %}<a href="{{ url_for('usuarios') }}" class="{{ 'ativo' if request.endpoint == 'usuarios' }}">Usuários</a>{% endif %}
+    </nav>
+    <div class="usuario">
+      👤 {{ g.user.nome }} ·
+      <a href="{{ url_for('minha_senha') }}">minha senha</a> ·
+      <a href="{{ url_for('sair') }}">sair</a>
+    </div>
+    {% endif %}
+  </header>
+  <main>
+    {% for cat, msg in get_flashed_messages(with_categories=true) %}
+      <div class="aviso {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+    {% block conteudo %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Editar aluno</h2>
+  <form method="post" class="linha">
+    <input name="nome" value="{{ aluno.nome }}" placeholder="Nome *" required>
+    <input name="turma" value="{{ aluno.turma or '' }}" placeholder="Turma">
+    <input name="matricula" value="{{ aluno.matricula or '' }}" placeholder="Matrícula">
+    <input name="telefone" value="{{ aluno.telefone or '' }}" placeholder="Telefone do responsável">
+    <button>Salvar</button>
+    <a href="{{ url_for('alunos') }}">cancelar</a>
+  </form>
+</section>
+{% endblock %}

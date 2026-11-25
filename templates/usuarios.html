@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Criar usuário</h2>
+  <form method="post" class="linha">
+    <input name="nome" placeholder="Nome *" required>
+    <input name="login" placeholder="Usuário (login) *" required>
+    <input name="senha" type="password" placeholder="Senha *" required minlength="4">
+    <label class="inline"><input type="checkbox" name="admin" value="1" style="width:auto"> administrador</label>
+    <button>Criar</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Usuários ({{ usuarios|length }})</h2>
+  <table>
+    <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Situação</th><th>Criado por</th><th>Redefinir senha</th><th></th></tr></thead>
+    <tbody>
+    {% for u in usuarios %}
+      <tr class="{{ 'inativo' if not u.ativo }}">
+        <td>{{ u.nome }}</td><td>{{ u.login }}</td>
+        <td>{{ 'administrador' if u.admin else 'operador' }}</td>
+        <td>{{ 'ativo' if u.ativo else 'desativado' }}</td>
+        <td>{{ u.criador or '—' }} <small>{{ u.criado_em|br }}</small></td>
+        <td>
+          <form method="post" action="{{ url_for('redefinir_senha', uid=u.id) }}" class="linha">
+            <input name="senha" type="password" placeholder="nova senha" required minlength="4" size="10">
+            <button class="pequeno">OK</button>
+          </form>
+        </td>
+        <td>
+          {% if u.id != g.user.id %}
+          <form method="post" action="{{ url_for('alternar_usuario', uid=u.id) }}">
+            <button class="pequeno {{ 'perigo' if u.ativo }}">{{ 'Desativar' if u.ativo else 'Reativar' }}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="card">
+  <h2>Novo empréstimo</h2>
+  <form method="post" action="{{ url_for('emprestar') }}" class="emprestimo">
+    <fieldset>
+      <legend>Aluno</legend>
+      <select name="aluno_id" id="aluno_id" required>
+        <option value="">— escolha o aluno —</option>
+        <option value="novo">＋ Cadastrar novo aluno</option>
+        {% for a in alunos %}
+          <option value="{{ a.id }}">{{ a.nome }}{% if a.turma %} ({{ a.turma }}){% endif %}</option>
+        {% endfor %}
+      </select>
+      <div id="novo_aluno" class="novo" hidden>
+        <input name="aluno_nome" placeholder="Nome do aluno *">
+        <input name="aluno_turma" placeholder="Turma (ex.: 6º A)">
+        <input name="aluno_matricula" placeholder="Matrícula (opcional)">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Livro</legend>
+      <select name="livro_id" id="livro_id" required>
+        <option value="">— escolha o livro —</option>
+        <option value="novo">＋ Cadastrar novo livro</option>
+        {% for l in livros %}
+          <option value="{{ l.id }}" {% if l.disponiveis <= 0 %}disabled{% endif %}>
+            {{ l.titulo }}{% if l.autor %} – {{ l.autor }}{% endif %}{% if l.codigo %} [{{ l.codigo }}]{% endif %}
+            ({{ l.disponiveis }} de {{ l.exemplares }} disp.)
+          </option>
+        {% endfor %}
+      </select>
+      <div id="novo_livro" class="novo" hidden>
+        <input name="livro_titulo" placeholder="Título *">
+        <input name="livro_autor" placeholder="Autor">
+        <input name="livro_codigo" placeholder="Código / tombo">
+        <label class="inline">Exemplares <input name="livro_exemplares" type="number" min="1" value="1"></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Prazo</legend>
+      <label>Devolver até <input type="date" name="data_prevista" value="{{ prevista }}" required></label>
+      <input name="observacao" placeholder="Observação (opcional)">
+    </fieldset>
+
+    <button type="submit">Registrar empréstimo</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Empréstimos em aberto ({{ abertos|length }})</h2>
+  {% if abertos %}
+  <table>
+    <thead><tr><th>Aluno</th><th>Turma</th><th>Livro</th><th>Emprestado</th><th>Por</th><th>Devolver até</th><th></th></tr></thead>
+    <tbody>
+    {% for e in abertos %}
+      <tr class="{{ 'atrasado' if e.data_prevista < hoje }}">
+        <td>{{ e.aluno_nome }}</td>
+        <td>{{ e.aluno_turma or '' }}</td>
+        <td>{{ e.livro_titulo }}{% if e.livro_codigo %} <small>[{{ e.livro_codigo }}]</small>{% endif %}</td>
+        <td>{{ e.data_emprestimo|br }}</td>
+        <td>{{ e.emprestado_por or '' }}</td>
+        <td>{{ e.data_prevista|br }}{% if e.data_prevista < hoje %} <strong>atrasado</strong>{% endif %}</td>
+        <td>
+          <form method="post" action="{{ url_for('devolver', emp_id=e.id) }}"
+                onsubmit="return confirm('Confirmar a devolução deste livro?')">
+            <button class="pequeno">Devolver</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="vazio">Nenhum livro emprestado no momento.</p>
+  {% endif %}
+</section>
+
+<script>
+  function alternar(selectId, boxId) {
+    const sel = document.getElementById(selectId);
+    const box = document.getElementById(boxId);
+    const atualizar = () => {
+      const novo = sel.value === 'novo';
+      box.hidden = !novo;
+      box.querySelector('input').required = novo;
+    };
+    sel.addEventListener('change', atualizar);
+    atualizar();
+  }
+  alternar('aluno_id', 'novo_aluno');
+  alternar('livro_id', 'novo_livro');
+</script>
+{% endblock %}
